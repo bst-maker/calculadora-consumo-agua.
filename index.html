@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Consumo Diário de Água (por peso)</title>
+  
+  <!-- Configurações PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f766e">
+
+  <style>
+    :root {
+      --bg-body: #f8fafc;
+      --bg-card: #ffffff;
+      --primary: #0f766e;        /* Verde sálvia / petróleo clínico */
+      --primary-hover: #115e59;
+      --primary-light: #f0fdfa;  /* Fundo sutil menta */
+      --text-main: #1e293b;      /* Grafite escuro para leitura */
+      --text-muted: #64748b;     /* Cinza médio */
+      --border-ui: #e2e8f0;      /* Borda sutil */
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 16px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      padding: 28px 24px;
+      border-radius: 12px;
+      border: 1px solid var(--border-ui);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+      width: 100%;
+      max-width: 380px;
+    }
+
+    h2 {
+      color: var(--primary);
+      text-align: center;
+      margin: 0 0 14px 0;
+      font-size: 19px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .frase-motivacional {
+      background-color: var(--primary-light);
+      border: 1px solid #ccfbf1;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 22px;
+      font-size: 13px;
+      color: #134e4a;
+      line-height: 1.45;
+      text-align: center;
+    }
+
+    .campo {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: 13px;
+      margin-bottom: 6px;
+      color: #334155;
+    }
+
+    input {
+      width: 100%;
+      padding: 11px 13px;
+      border: 1px solid var(--border-ui);
+      border-radius: 6px;
+      font-size: 15px;
+      color: var(--text-main);
+      background-color: #ffffff;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+    }
+
+    button {
+      width: 100%;
+      background-color: var(--primary);
+      color: #ffffff;
+      padding: 13px;
+      border: none;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 4px;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: var(--primary-hover);
+    }
+
+    button:active {
+      transform: scale(0.99);
+    }
+
+    .resultado {
+      margin-top: 20px;
+      padding: 14px;
+      background-color: #f1f5f9;
+      border-left: 4px solid var(--primary);
+      border-radius: 6px;
+      display: none;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-main);
+    }
+
+    .resultado strong {
+      color: var(--primary);
+    }
+
+    .criterio-box {
+      margin-top: 22px;
+      background-color: #ffffff;
+      border: 1px solid var(--border-ui);
+      border-radius: 8px;
+      padding: 14px;
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .criterio-box h4 {
+      margin: 0 0 8px 0;
+      color: var(--text-main);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .criterio-box ul {
+      margin: 0;
+      padding-left: 16px;
+    }
+
+    .criterio-box li {
+      margin-bottom: 6px;
+    }
+
+    .criterio-box strong {
+      color: #334155;
+    }
+
+    footer {
+      margin-top: 22px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-ui);
+      padding-top: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h2>Calculadora de Consumo Diário de Água (por peso)</h2>
+
+    <div class="frase-motivacional">
+      💧 <em>Cerca de 60% do peso corporal é composto por água. A hidratação individualizada é um pilar clínico essencial para o equilíbrio metabólico e a saúde renal.</em>
+    </div>
+
+    <div class="campo">
+      <label for="idade">Idade (anos):</label>
+      <input type="number" id="idade" placeholder="Ex: 28">
+    </div>
+
+    <div class="campo">
+      <label for="peso">Peso corporal (kg):</label>
+      <input type="number" id="peso" step="0.1" placeholder="Ex: 72.5">
+    </div>
+
+    <button onclick="calcular()">Calcular Recomendação</button>
+
+    <div id="resultado" class="resultado"></div>
+
+    <div class="criterio-box">
+      <h4>Critérios Clínicos Adotados:</h4>
+      <ul>
+        <li><strong>Jovens (até 17 anos) — 40 ml/kg:</strong> demanda hídrica elevada e taxa metabólica basal acelerada.</li>
+        <li><strong>Adultos (18 a 64 anos) — 35 ml/kg:</strong> padrão de referência para homeostase celular e depuração renal.</li>
+        <li><strong>Idosos (65+ anos) — 30 ml/kg:</strong> ajuste fisiológico para prevenção de sobrecarga renal e controle hídrico.</li>
+      </ul>
+    </div>
+
+    <footer>
+      Produzido by <strong>Bruno Trindade</strong>
+    </footer>
+  </div>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+
+    function calcular() {
+      const idade = parseInt(document.getElementById('idade').value);
+      const peso = parseFloat(document.getElementById('peso').value);
+      const res = document.getElementById('resultado');
+
+      if (!idade || !peso || peso <= 0 || idade <= 0) {
+        res.style.display = 'block';
+        res.innerHTML = "Por favor, insira valores válidos para idade e peso.";
+        return;
+      }
+
+      let ml;
+      if (idade <= 17) {
+        ml = peso * 40;
+      } else if (idade <= 64) {
+        ml = peso * 35;
+      } else {
+        ml = peso * 30;
+      }
+
+      const litros = (ml / 1000).toFixed(2);
+
+      res.style.display = 'block';
+      res.innerHTML = `
+        <strong>Resultado Clínico:</strong><br>
+        Faixa etária: ${idade} anos | Peso: ${peso} kg<br>
+        Meta recomendada: <strong>${ml.toFixed(0)} ml/dia</strong> (~${litros} L)
+      `;
+    }
+  </script>
+</body>
+</html>
